@@ -81,7 +81,7 @@ export default function PastSimulations({ currentQuote, profile, onLoadSimulatio
   };
 
   return (
-    <div className="bg-white border-2 border-zinc-200 rounded-3xl p-6 shadow-xl space-y-4" id="past-simulations-container">
+    <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 shadow-lg space-y-4" id="past-simulations-container">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FolderOpen className="h-5 w-5 text-aspeb-orange" />

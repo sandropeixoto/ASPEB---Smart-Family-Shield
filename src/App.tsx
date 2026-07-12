@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { 
   Heart,
   Phone,
@@ -37,8 +37,17 @@ import BenefitCard from "./components/BenefitCard";
 import RoiWidget from "./components/RoiWidget";
 import CheckoutModal from "./components/CheckoutModal";
 import PastSimulations from "./components/PastSimulations";
+import ScrollReveal from "./components/ScrollReveal";
 
 export default function App() {
+  // Framer Motion scroll hooks for scroll progress and parallax
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  const { scrollY } = useScroll();
+  const heroParallaxY = useTransform(scrollY, [0, 600], [0, 50]);
+  const heroOpacity = useTransform(scrollY, [0, 600], [1, 0.85]);
+
   // Global States
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [coverages, setCoverages] = useState<Coverage[]>([]);
@@ -200,6 +209,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-zinc-900 font-sans antialiased selection:bg-orange-500 selection:text-white">
       
+      {/* Scroll Progress Indicator Bar */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-1 bg-aspeb-orange z-50 origin-left"
+        style={{ scaleX }}
+        id="scroll-progress-bar"
+      />
+
       {/* HEADER / NAVIGATION */}
       <header className="border-b border-zinc-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -325,8 +341,11 @@ export default function App() {
 
           {/* Hero Right Visual Showcase */}
           <div className="lg:col-span-5 relative flex justify-center">
-            {/* Visual badge card stacked */}
-            <div className="relative w-full max-w-sm bg-white border border-zinc-100 rounded-3xl p-6 shadow-2xl space-y-6">
+            {/* Visual badge card stacked with subtle parallax */}
+            <motion.div 
+              style={{ y: heroParallaxY, opacity: heroOpacity }}
+              className="relative w-full max-w-sm bg-white border border-zinc-200/80 rounded-3xl p-6 shadow-2xl space-y-6"
+            >
               
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-orange-100 text-aspeb-orange rounded-2xl">
@@ -361,7 +380,7 @@ export default function App() {
                 Experimentar Simulador
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
-            </div>
+            </motion.div>
             
             {/* Ambient background blur */}
             <div className="absolute -z-10 -bottom-10 right-10 h-72 w-72 bg-orange-400/10 rounded-full blur-3xl" />
@@ -375,7 +394,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
             
-            <div className="py-4 sm:py-0">
+            <ScrollReveal className="py-4 sm:py-0" delay={0}>
               <span className="block text-4xl font-black text-aspeb-orange font-mono">
                 +30 Anos
               </span>
@@ -385,9 +404,9 @@ export default function App() {
               <span className="block text-xs text-zinc-400 mt-1">
                 Liderança no mercado da Região Norte
               </span>
-            </div>
+            </ScrollReveal>
 
-            <div className="py-6 sm:py-0">
+            <ScrollReveal className="py-6 sm:py-0" delay={0.15}>
               <span className="block text-4xl font-black text-aspeb-orange font-mono">
                 +100 Mil
               </span>
@@ -397,9 +416,9 @@ export default function App() {
               <span className="block text-xs text-zinc-400 mt-1">
                 Famílias cuidadas com compromisso real
               </span>
-            </div>
+            </ScrollReveal>
 
-            <div className="py-4 sm:py-0">
+            <ScrollReveal className="py-4 sm:py-0" delay={0.3}>
               <span className="block text-4xl font-black text-aspeb-orange font-mono">
                 100% Humano
               </span>
@@ -409,7 +428,7 @@ export default function App() {
               <span className="block text-xs text-zinc-400 mt-1">
                 Atendimento rápido via WhatsApp e escritórios
               </span>
-            </div>
+            </ScrollReveal>
 
           </div>
         </div>
@@ -419,7 +438,7 @@ export default function App() {
       <section id="saude" className="py-16 md:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3">
+          <ScrollReveal className="text-center max-w-3xl mx-auto space-y-3">
             <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-black uppercase tracking-widest">
               Cuidados Imediatos
             </span>
@@ -429,86 +448,94 @@ export default function App() {
             <p className="text-sm sm:text-base text-zinc-500 font-sans leading-relaxed">
               Diferente dos seguros tradicionais, a ASPEB oferece benefícios práticos que você usa desde o primeiro dia de adesão, sem carências para agendamentos.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Card 1: Consultas R$ 35 */}
-            <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold">
-                  <Activity className="h-6 w-6" />
+            <ScrollReveal className="flex" delay={0}>
+              <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6 w-full">
+                <div className="space-y-4">
+                  <div className="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold">
+                    <Activity className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-950 font-sans">
+                    Consultas Médicas de R$ 35,00
+                  </h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-sans">
+                    Acesse consultas de clínico geral e especialistas nas melhores clínicas conveniadas por um valor extremamente acessível de associado.
+                  </p>
                 </div>
-                <h3 className="text-lg font-black text-zinc-950 font-sans">
-                  Consultas Médicas de R$ 35,00
-                </h3>
-                <p className="text-xs text-zinc-500 leading-relaxed font-sans">
-                  Acesse consultas de clínico geral e especialistas nas melhores clínicas conveniadas por um valor extremamente acessível de associado.
-                </p>
+                <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
+                  <span>Clínicas em Belém e Região</span>
+                  <span className="text-emerald-600 font-mono">R$ 35,00 fixo</span>
+                </div>
               </div>
-              <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
-                <span>Clínicas em Belém e Região</span>
-                <span className="text-emerald-600 font-mono">R$ 35,00 fixo</span>
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Card 2: Exames até 70% Off */}
-            <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="h-12 w-12 bg-orange-50 text-aspeb-orange rounded-2xl flex items-center justify-center font-bold">
-                  <Percent className="h-6 w-6" />
+            <ScrollReveal className="flex" delay={0.15}>
+              <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6 w-full">
+                <div className="space-y-4">
+                  <div className="h-12 w-12 bg-orange-50 text-aspeb-orange rounded-2xl flex items-center justify-center font-bold">
+                    <Percent className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-950 font-sans">
+                    Até 70% de Desconto em Exames
+                  </h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-sans">
+                    Economize significativamente em exames laboratoriais (sangue, urina) e exames de imagem nas redes credenciadas de alto padrão.
+                  </p>
                 </div>
-                <h3 className="text-lg font-black text-zinc-950 font-sans">
-                  Até 70% de Desconto em Exames
-                </h3>
-                <p className="text-xs text-zinc-500 leading-relaxed font-sans">
-                  Economize significativamente em exames laboratoriais (sangue, urina) e exames de imagem nas redes credenciadas de alto padrão.
-                </p>
+                <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
+                  <span>Laboratórios renomados</span>
+                  <span className="text-aspeb-orange font-mono">Até 70% Off</span>
+                </div>
               </div>
-              <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
-                <span>Laboratórios renomados</span>
-                <span className="text-aspeb-orange font-mono">Até 70% Off</span>
-              </div>
-            </div>
+            </ScrollReveal>
 
             {/* Card 3: Clínica Matriz Privilegiada */}
-            <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold">
-                  <MapPin className="h-6 w-6" />
+            <ScrollReveal className="flex" delay={0.3}>
+              <div className="bg-white border border-zinc-200/60 p-8 rounded-3xl shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-6 w-full">
+                <div className="space-y-4">
+                  <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold">
+                    <MapPin className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-lg font-black text-zinc-950 font-sans">
+                    Clínica Matriz e Ampla Rede
+                  </h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-sans">
+                    Conte com nossa infraestrutura própria em Belém e uma rede que se estende por toda a região metropolitana para sua conveniência.
+                  </p>
                 </div>
-                <h3 className="text-lg font-black text-zinc-950 font-sans">
-                  Clínica Matriz e Ampla Rede
-                </h3>
-                <p className="text-xs text-zinc-500 leading-relaxed font-sans">
-                  Conte com nossa infraestrutura própria em Belém e uma rede que se estende por toda a região metropolitana para sua conveniência.
-                </p>
+                <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
+                  <span>Atendimento Facilitado</span>
+                  <span className="text-blue-600">Localização Central</span>
+                </div>
               </div>
-              <div className="border-t border-zinc-100 pt-4 flex items-center justify-between text-xs font-bold text-zinc-800">
-                <span>Atendimento Facilitado</span>
-                <span className="text-blue-600">Localização Central</span>
-              </div>
-            </div>
+            </ScrollReveal>
 
           </div>
 
           {/* Quick interactive quote trigger */}
-          <div className="bg-gradient-to-r from-orange-500 to-amber-600 p-8 rounded-3xl text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
-            <div className="space-y-1 text-center md:text-left">
-              <h4 className="font-extrabold text-lg sm:text-xl font-sans">
-                Quer saber o quanto você economiza por mês na sua saúde?
-              </h4>
-              <p className="text-xs text-white/85">
-                Utilize nosso simulador interativo abaixo para calcular o retorno financeiro do clube.
-              </p>
+          <ScrollReveal delay={0.1}>
+            <div className="bg-gradient-to-r from-orange-500 to-amber-600 p-8 rounded-3xl text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
+              <div className="space-y-1 text-center md:text-left">
+                <h4 className="font-extrabold text-lg sm:text-xl font-sans">
+                  Quer saber o quanto você economiza por mês na sua saúde?
+                </h4>
+                <p className="text-xs text-white/85">
+                  Utilize nosso simulador interativo abaixo para calcular o retorno financeiro do clube.
+                </p>
+              </div>
+              <button 
+                onClick={() => scrollToId("simulador-secao")}
+                className="px-6 py-3.5 bg-white text-aspeb-orange text-xs font-black uppercase tracking-wider rounded-xl hover:bg-zinc-50 transition shrink-0 shadow-lg cursor-pointer"
+              >
+                Iniciar Simulação
+              </button>
             </div>
-            <button 
-              onClick={() => scrollToId("simulador-secao")}
-              className="px-6 py-3.5 bg-white text-aspeb-orange text-xs font-black uppercase tracking-wider rounded-xl hover:bg-zinc-50 transition shrink-0 shadow-lg cursor-pointer"
-            >
-              Iniciar Simulação
-            </button>
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>
@@ -517,7 +544,7 @@ export default function App() {
       <section id="beneficios" className="py-16 md:py-24 bg-white border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3">
+          <ScrollReveal className="text-center max-w-3xl mx-auto space-y-3">
             <span className="px-3 py-1 rounded-full bg-orange-100 text-aspeb-orange text-xs font-black uppercase tracking-widest">
               Vantagens Integradas
             </span>
@@ -527,12 +554,12 @@ export default function App() {
             <p className="text-sm sm:text-base text-zinc-500 leading-relaxed font-sans">
               Mais do que proteção nas horas difíceis, trazemos facilidades e economias diárias para você, seu bolso e sua família inteira.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             
             {/* Benefit item 1 */}
-            <div className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100">
+            <ScrollReveal className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100" delay={0}>
               <div className="p-2.5 bg-white text-aspeb-orange rounded-xl inline-block shadow-sm">
                 <Heart className="h-5 w-5" />
               </div>
@@ -540,10 +567,10 @@ export default function App() {
               <p className="text-xs text-zinc-500 leading-relaxed">
                 Até 60% de desconto em medicamentos de uso contínuo e genéricos na Drogasil, Extrafarma e Pague Menos.
               </p>
-            </div>
+            </ScrollReveal>
 
             {/* Benefit item 2 */}
-            <div className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100">
+            <ScrollReveal className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100" delay={0.1}>
               <div className="p-2.5 bg-white text-aspeb-orange rounded-xl inline-block shadow-sm">
                 <Award className="h-5 w-5" />
               </div>
@@ -551,10 +578,10 @@ export default function App() {
               <p className="text-xs text-zinc-500 leading-relaxed">
                 Concorra mensalmente a prêmios em dinheiro de até R$ 20.000,00 emitidos e liquidados pela Loteria Federal.
               </p>
-            </div>
+            </ScrollReveal>
 
             {/* Benefit item 3 */}
-            <div className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100">
+            <ScrollReveal className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100" delay={0.2}>
               <div className="p-2.5 bg-white text-aspeb-orange rounded-xl inline-block shadow-sm">
                 <Shield className="h-5 w-5" />
               </div>
@@ -562,10 +589,10 @@ export default function App() {
               <p className="text-xs text-zinc-500 leading-relaxed">
                 Segurança financeira para sua família através do respaldo da Icatu Seguros, com indenizações flexíveis.
               </p>
-            </div>
+            </ScrollReveal>
 
             {/* Benefit item 4 */}
-            <div className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100">
+            <ScrollReveal className="space-y-3 p-6 bg-slate-50 rounded-2xl border border-zinc-100" delay={0.3}>
               <div className="p-2.5 bg-white text-aspeb-orange rounded-xl inline-block shadow-sm">
                 <CheckCircle2 className="h-5 w-5" />
               </div>
@@ -573,7 +600,7 @@ export default function App() {
               <p className="text-xs text-zinc-500 leading-relaxed">
                 Tenha suporte rápido e alívio imediato para dores e acidentes bucais através de clínicas odontológicas parceiras.
               </p>
-            </div>
+            </ScrollReveal>
 
           </div>
 
@@ -584,7 +611,7 @@ export default function App() {
       <section id="simulador-secao" className="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3">
+          <ScrollReveal className="text-center max-w-3xl mx-auto space-y-3">
             <span className="px-3 py-1 rounded-full bg-orange-100 text-aspeb-orange text-xs font-black uppercase tracking-widest">
               Faça Você Mesmo
             </span>
@@ -594,9 +621,9 @@ export default function App() {
             <p className="text-sm sm:text-base text-zinc-500 leading-relaxed font-sans">
               Responda rápido para obter uma recomendação inteligente baseada no seu perfil. Ajuste as coberturas e escolha as vantagens para ver as economias amortizarem o plano.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-white border-2 border-zinc-200/80 rounded-[36px] shadow-2xl p-6 sm:p-8 md:p-12 min-h-[480px]">
+          <ScrollReveal className="min-h-[480px]" id="simulador-sandbox-wrapper" delay={0.15}>
             <AnimatePresence mode="wait">
               
               {/* If no profile is onboarded, show the Onboarding step */}
@@ -681,7 +708,7 @@ export default function App() {
                             2. Clube de Vantagens & Cuidados de Saúde
                           </h4>
                           <p className="text-xs text-zinc-400 mt-0.5">
-                            Ative as vantagens de consultas médicas, medicamentos e sorteios.
+                            Ative as vantagens de consultas médicas, medicamentos and sorteios.
                           </p>
                         </div>
 
@@ -722,7 +749,7 @@ export default function App() {
               )}
 
             </AnimatePresence>
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>
@@ -732,7 +759,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* App left content */}
-          <div className="lg:col-span-7 space-y-6">
+          <ScrollReveal className="lg:col-span-7 space-y-6" delay={0}>
             <span className="px-3 py-1 rounded-full bg-orange-100 text-aspeb-orange text-xs font-black uppercase tracking-widest">
               ASPEB Mobile
             </span>
@@ -740,7 +767,7 @@ export default function App() {
               Tudo o que você precisa na palma da sua mão
             </h2>
             <p className="text-sm sm:text-base text-zinc-500 leading-relaxed font-sans">
-              O aplicativo oficial ASPEB oferece agilidade para você usufruir da sua saúde e vantagens com total autonomia.
+              O aplicativo oficial ASPEB oferece agilidade para você usufruir da sua saúde e vantagens com total autonomia. <strong>Já incluso gratuitamente para todos os planos e associados!</strong>
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
@@ -797,10 +824,10 @@ export default function App() {
               </div>
             </div>
 
-          </div>
+          </ScrollReveal>
 
           {/* App right visual mockup */}
-          <div className="lg:col-span-5 flex justify-center">
+          <ScrollReveal className="lg:col-span-5 flex justify-center" delay={0.2} yOffset={55}>
             <div className="relative border-4 border-zinc-900 rounded-[3rem] p-3 w-[260px] h-[520px] bg-white shadow-2xl overflow-hidden shrink-0">
               {/* Phone ear speaker & camera notch */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 rounded-b-2xl z-20 flex items-center justify-center">
@@ -853,7 +880,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>
@@ -862,7 +889,7 @@ export default function App() {
       <section id="faq" className="py-16 md:py-24 bg-slate-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center space-y-3">
+          <ScrollReveal className="text-center space-y-3">
             <span className="px-3 py-1 rounded-full bg-orange-100 text-aspeb-orange text-xs font-black uppercase tracking-widest">
               Suporte Informativo
             </span>
@@ -872,9 +899,9 @@ export default function App() {
             <p className="text-sm sm:text-base text-zinc-500 leading-relaxed font-sans">
               Esclareça suas principais dúvidas sobre o clube de benefícios ASPEB.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="space-y-4">
+          <ScrollReveal className="space-y-4" delay={0.15}>
             {faqs.map((faq, index) => (
               <div 
                 key={index}
@@ -905,7 +932,7 @@ export default function App() {
                 </AnimatePresence>
               </div>
             ))}
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>

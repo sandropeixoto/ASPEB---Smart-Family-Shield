@@ -51,7 +51,7 @@ export default function RoiWidget({ coverages, benefits, ageMultiplier, onChecko
 
   return (
     <div 
-      className="bg-white border-2 border-zinc-200 rounded-3xl p-6 shadow-xl space-y-6 sticky top-6"
+      className="bg-white border border-zinc-200/80 rounded-3xl p-6 shadow-lg space-y-6 sticky top-6"
       id="roi-widget-container"
     >
       {/* Widget Header */}

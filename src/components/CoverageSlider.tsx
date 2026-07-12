@@ -44,13 +44,13 @@ export default function CoverageSlider({ coverage, onChange, ageMultiplier }: Co
 
   return (
     <div 
-      className="p-5 bg-zinc-50 border border-zinc-100 rounded-2xl transition hover:shadow-md duration-200"
+      className="p-5 bg-white border border-zinc-200/80 rounded-2xl transition hover:shadow-md duration-200"
       id={`coverage-card-${coverage.id}`}
     >
       {/* Header Info */}
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-white rounded-xl border border-zinc-150 shadow-sm flex items-center justify-center shrink-0">
+          <div className="p-2.5 bg-zinc-50 rounded-xl border border-zinc-150 shadow-sm flex items-center justify-center shrink-0">
             {getIcon()}
           </div>
           <div>
@@ -80,7 +80,7 @@ export default function CoverageSlider({ coverage, onChange, ageMultiplier }: Co
       </div>
 
       {/* Expanded Description Toggle / Hover */}
-      <p className="text-[11px] text-zinc-400 bg-white p-2.5 rounded-lg border border-zinc-100 mb-4 font-sans leading-relaxed">
+      <p className="text-[11px] text-zinc-400 bg-zinc-50/50 p-2.5 rounded-lg border border-zinc-100 mb-4 font-sans leading-relaxed">
         {coverage.description}
       </p>
 

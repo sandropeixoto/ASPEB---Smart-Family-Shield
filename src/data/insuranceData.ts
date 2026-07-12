@@ -94,14 +94,14 @@ export const INITIAL_BENEFITS: Benefit[] = [
     isSelected: false
   },
   {
-    id: "app_aspeb",
-    title: "Aplicativo ASPEB Cliente",
-    provider: "Disponível para iOS e Android",
-    description: "Sua carteirinha digital sempre à mão, consulta fácil à Rede Credenciada próxima, extratos e novidades no app de forma intuitiva.",
-    cost: 0.00,
-    estimatedSavings: 15.00, // Comodidade, sem cobrança extra de emissão física
-    icon: "Smartphone",
-    tag: "Tecnologia",
+    id: "telemedicina",
+    title: "Telemedicina Familiar 24h",
+    provider: "Plantão Médico por Vídeo",
+    description: "Consultas médicas e pediátricas online ilimitadas, 24h por dia, sem carência. Receba receitas de medicamentos, atestados e pedidos de exames diretamente no celular.",
+    cost: 9.90,
+    estimatedSavings: 360.00, // Economia anual de consultas particulares evitadas
+    icon: "Phone",
+    tag: "Saúde",
     isSelected: false
   }
 ];

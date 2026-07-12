@@ -300,22 +300,8 @@ export default function Onboarding({ onComplete, isDarkMode }: OnboardingProps) 
 
   return (
     <div className="max-w-xl mx-auto" id="onboarding-container">
-      {/* Visual Header / Brand Signature */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 text-aspeb-orange text-xs font-semibold uppercase tracking-wider mb-3 animate-pulse">
-          <Sparkles className="h-3 w-3" />
-          Simulador Oficial ASPEB
-        </div>
-        <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight font-sans">
-          Proteção Familiar Inteligente
-        </h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Simule coberturas ideais e ative um clube de benefícios real
-        </p>
-      </div>
-
       {/* Main card */}
-      <div className="bg-white border border-zinc-200 rounded-3xl shadow-xl overflow-hidden p-6 md:p-8 relative">
+      <div className="bg-white border border-zinc-200/80 rounded-3xl shadow-lg overflow-hidden p-6 md:p-8 relative">
         
         {/* Step indicators */}
         <div className="flex items-center gap-2 mb-6" id="onboarding-steps-indicator">

@@ -7,6 +7,7 @@ import {
   ShieldAlert, 
   Award, 
   Smartphone,
+  Phone,
   CheckCircle2, 
   Plus,
   ArrowUpRight
@@ -33,6 +34,8 @@ export default function BenefitCard({ benefit, onToggle }: BenefitCardProps) {
         return <Award className="h-5 w-5" />;
       case "Smartphone":
         return <Smartphone className="h-5 w-5" />;
+      case "Phone":
+        return <Phone className="h-5 w-5" />;
       default:
         return <Activity className="h-5 w-5" />;
     }
