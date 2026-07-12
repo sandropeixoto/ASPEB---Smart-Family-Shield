@@ -38,6 +38,40 @@ export default function CheckoutModal({
   const [paymentMethod, setPaymentMethod] = useState("pix"); // pix, card, debito
   const [isCopied, setIsCopied] = useState(false);
 
+  // Confetti particles state
+  const [confetti, setConfetti] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (step === 3) {
+      const particles = Array.from({ length: 75 }).map((_, i) => {
+        const isCircle = Math.random() > 0.4;
+        return {
+          id: i,
+          x: Math.random() * 100,
+          y: -15,
+          size: Math.random() * 8 + 5,
+          shape: isCircle ? "rounded-full" : Math.random() > 0.5 ? "rounded-sm" : "rotate-45",
+          color: [
+            "#f97316", // ASPEB Orange
+            "#fbbf24", // Amber
+            "#10b981", // Emerald
+            "#3b82f6", // Blue
+            "#a855f7", // Purple
+            "#ec4899"  // Pink
+          ][Math.floor(Math.random() * 6)],
+          duration: Math.random() * 2.6 + 1.8,
+          delay: Math.random() * 0.4,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 500,
+          drift: (Math.random() - 0.5) * 35
+        };
+      });
+      setConfetti(particles);
+    } else {
+      setConfetti([]);
+    }
+  }, [step]);
+
   // Form Fields
   const [cpf, setCpf] = useState("");
   const [phone, setPhone] = useState("");
@@ -103,6 +137,23 @@ export default function CheckoutModal({
       style: "currency",
       currency: "BRL"
     }).format(val);
+  };
+
+  const getConcernCelebrationMessage = (): string => {
+    const concernLower = profile.concern?.toLowerCase() || "";
+    if (concernLower.includes("saude") || concernLower.includes("médic") || concernLower.includes("consult") || concernLower.includes("clínica")) {
+      return "Com a sua adesão, você garantiu acesso imediato a consultas presenciais por apenas R$ 35,00 e até 70% de desconto em exames laboratoriais e de imagem na rede credenciada de Belém e Região. Cuidar da saúde agora cabe com folga no seu orçamento!";
+    }
+    if (concernLower.includes("medic") || concernLower.includes("farmac")) {
+      return "Excelente escolha! A partir de agora você conta com até 60% de desconto real em medicamentos de uso contínuo e genéricos na Drogasil, Extrafarma e Pague Menos. Isso significa economia prática e garantida em todas as receitas da sua família.";
+    }
+    if (concernLower.includes("finance") || concernLower.includes("segur") || concernLower.includes("prote")) {
+      return "Parabéns por essa importante decisão! Sua família e patrimônio agora estão sob o amparo robusto das coberturas contratadas junto à Icatu Seguros. E além da tranquilidade diária, você concorre mensalmente a prêmios em dinheiro de até R$ 20.000,00!";
+    }
+    if (concernLower.includes("odonto") || concernLower.includes("dente")) {
+      return "Uma escolha muito inteligente! Sua saúde bucal e urgências odontológicas agora estão assistidas com agilidade e zero custos abusivos para consultas e tratamento imediato de dor em clínicas qualificadas.";
+    }
+    return "Você escolheu a segurança e o cuidado integral que quem você mais ama merece. Parabéns por garantir assistências de alto padrão e vantagens diárias ativas desde o primeiro dia de vigência de sua proposta!";
   };
 
   // Helper mask functions
@@ -189,6 +240,43 @@ Adesão processada com sucesso. Seja bem-vindo à ASPEB!
         transition={{ type: "spring", duration: 0.4 }}
         className="bg-white border border-zinc-200 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl relative z-10 max-h-[90vh] flex flex-col"
       >
+        
+        {/* Confetti Animation overlay */}
+        {step === 3 && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+            {confetti.map((p) => (
+              <motion.div
+                key={p.id}
+                initial={{ 
+                  opacity: 1, 
+                  y: `${p.y}%`, 
+                  x: `${p.x}%`, 
+                  rotate: p.rotation,
+                  scale: 0
+                }}
+                animate={{ 
+                  opacity: [1, 1, 0], 
+                  y: "110%", 
+                  x: `${p.x + p.drift}%`,
+                  rotate: p.rotation + p.rotationSpeed,
+                  scale: [0, 1, 0.7]
+                }}
+                transition={{
+                  duration: p.duration,
+                  delay: p.delay,
+                  ease: "easeOut"
+                }}
+                className={`absolute ${p.shape}`}
+                style={{ 
+                  backgroundColor: p.color,
+                  width: p.size,
+                  height: p.size,
+                  top: 0
+                }}
+              />
+            ))}
+          </div>
+        )}
         
         {/* Top Header */}
         <div className="flex items-center justify-between p-5 border-b border-zinc-100">
@@ -544,18 +632,34 @@ Adesão processada com sucesso. Seja bem-vindo à ASPEB!
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
-                <div className="flex flex-col items-center justify-center text-center space-y-3">
-                  <div className="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
-                    <CheckCircle2 className="h-10 w-10 animate-bounce" />
+                <div className="flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/15">
+                    <CheckCircle2 className="h-10 w-10 animate-bounce text-emerald-600" />
                   </div>
                   <div>
                     <h3 className="font-black text-2xl text-zinc-900 font-sans tracking-tight">
-                      Adesão Solicitada com Sucesso! 🎉
+                      Parabéns, {profile.name}! 🎉
                     </h3>
-                    <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider mt-1 flex items-center justify-center gap-1">
-                      <Sparkles className="h-3.5 w-3.5" /> Proposta gerada sob o padrão ASPEB
+                    <p className="text-xs text-emerald-600 font-black uppercase tracking-wider mt-1 flex items-center justify-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 animate-pulse" /> Proposta Gerada com Sucesso
                     </p>
                   </div>
+                </div>
+
+                {/* Personalized Celebration Box */}
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-100 rounded-2xl p-6 text-center space-y-3 relative overflow-hidden shadow-sm">
+                  <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none">
+                    <Sparkles className="h-14 w-14 text-emerald-600" />
+                  </div>
+                  <p className="text-zinc-700 text-sm font-sans leading-relaxed">
+                    {getConcernCelebrationMessage()}
+                  </p>
+                  {totalSavings > 0 && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-xs font-extrabold text-emerald-700 mt-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Sua economia estimada é de {formatCurrency(totalSavings)} por mês!</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* PIX QR CODE CONDITIONAL BOX */}
