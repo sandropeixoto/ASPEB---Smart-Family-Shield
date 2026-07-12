@@ -1,0 +1,6 @@
+{
+  "name": "ASPEB Benefícios - Saúde & Proteção Familiar",
+  "description": "Landing page de alta conversão para a ASPEB Benefícios com simulador inteligente de clube de vantagens, consultas médicas e seguro de vida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
