@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "motion/react";
 import { 
   Heart,
   Phone,
@@ -42,7 +42,11 @@ import ScrollReveal from "./components/ScrollReveal";
 export default function App() {
   // Framer Motion scroll hooks for scroll progress and parallax
   const { scrollYProgress } = useScroll();
-  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   const { scrollY } = useScroll();
   const heroParallaxY = useTransform(scrollY, [0, 600], [0, 50]);
@@ -211,7 +215,7 @@ export default function App() {
       
       {/* Scroll Progress Indicator Bar */}
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-aspeb-orange z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 z-50 origin-left shadow-sm"
         style={{ scaleX }}
         id="scroll-progress-bar"
       />
