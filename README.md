@@ -50,7 +50,7 @@ Através de uma interface moderna e de alta fidelidade visual, o usuário realiz
 | **Servidor Local / Dev** | Node.js + Express (v4.21.2) integrado |
 | **Persistência de Dados** | LocalStorage (Estado do cliente para histórico e sessões) |
 | **Controle de Tipagem** | TypeScript Estrito (Estrito em contratos, enums e interfaces) |
-| **CI/CD / Pipeline** | GitHub Actions (deploy automatizado via gh-pages) |
+| **CI/CD / Pipeline** | GitHub Actions (deploy automatizado nativo via Pages API) |
 
 ---
 
@@ -149,15 +149,17 @@ Abaixo estão os scripts definidos no `package.json` para facilitar os fluxos de
 O fluxo de Deploy está totalmente automatizado no projeto através da tecnologia **GitHub Actions**.
 
 ### Pipeline de Integração e Entrega Contínua (CI/CD)
-O arquivo de workflow localizado em `.github/workflows/deploy.yml` é acionado automaticamente a cada alteração ou `push` realizado nos ramos (`branches`) `main` ou `master`. 
+O arquivo de workflow localizado em `.github/workflows/deploy.yml` é acionado automaticamente a cada alteração ou `push` realizado na branch `main`.
 
 O fluxo segue os seguintes estágios sequenciais:
 1.  **Checkout:** Extração e leitura do código fonte do repositório no agente virtual (Ubuntu Linux).
 2.  **Configuração do Node.js:** Instanciação automatizada do ambiente Node.js na versão LTS atual (Node 20).
-3.  **Instalação de Dependências:** Execução do `npm install` limpo para baixar os pacotes declarados.
-4.  **Lint / Validação:** Execução do script `npm run lint` (`tsc --noEmit`) para garantir que o código esteja livre de avisos, tipagens incorretas ou bugs de compilação.
-5.  **Compilação (Build):** Geração do diretório otimizado e minificado `/dist` utilizando o Vite.
-6.  **Deploy Automático:** Através da action corporativa `JamesIves/github-pages-deploy-action`, o diretório `/dist` é automaticamente publicado na branch `gh-pages` do seu repositório, disponibilizando a landing page em produção de forma transparente.
+3.  **Instalação de Dependências:** Execução do `npm install` para baixar os pacotes declarados.
+4.  **Lint / Validação:** Execução do script `npm run lint` (`tsc --noEmit`) para garantir que o código esteja livre de erros ou avisos de tipagem estática e sintaxe do TypeScript. Se esta etapa falhar, o build e o deploy são interrompidos imediatamente.
+5.  **Compilação (Build):** Geração dos ativos estáticos minificados na pasta `/dist` por meio do Vite.
+6.  **Configuração do Pages:** Execução da action oficial `actions/configure-pages` para habilitar as definições nativas do GitHub Pages.
+7.  **Upload de Artefatos:** Envio seguro da pasta `/dist` utilizando `actions/upload-pages-artifact`.
+8.  **Deploy Automático:** Ativação da action nativa oficial `actions/deploy-pages` com escopo e permissões do token (`pages: write` e `id-token: write`) para publicar o conteúdo em produção sem a necessidade de manter branches de deploy paralelas (como `gh-pages`).
 
 ---
 
