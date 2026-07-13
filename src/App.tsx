@@ -5,6 +5,7 @@ import {
   Phone,
   Shield,
   ArrowRight,
+  ArrowUp,
   ChevronDown,
   Award,
   Activity,
@@ -62,6 +63,23 @@ export default function App() {
   // Navigation & Interactive UI States
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState<boolean>(false);
+
+  // Monitor scroll for Back to Top visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 500);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
 
   // Initialize coverages and benefits silently
   useEffect(() => {
@@ -1017,6 +1035,26 @@ export default function App() {
             ageMultiplier={ageMultiplier}
             onSuccess={handleCheckoutSuccess}
           />
+        )}
+      </AnimatePresence>
+
+      {/* FLOATING BACK TO TOP BUTTON */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            key="back-to-top"
+            initial={{ opacity: 0, scale: 0.5, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 30 }}
+            whileHover={{ scale: 1.1, translateY: -2 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 p-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 border border-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 z-40 cursor-pointer"
+            aria-label="Voltar ao topo"
+            title="Voltar ao topo"
+          >
+            <ArrowUp className="h-5 w-5 stroke-[2.5]" />
+          </motion.button>
         )}
       </AnimatePresence>
 
