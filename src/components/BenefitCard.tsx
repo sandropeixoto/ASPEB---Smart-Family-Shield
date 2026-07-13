@@ -10,16 +10,18 @@ import {
   Phone,
   CheckCircle2, 
   Plus,
-  ArrowUpRight
+  ArrowUpRight,
+  HelpCircle
 } from "lucide-react";
 
 interface BenefitCardProps {
   benefit: Benefit;
   onToggle: (id: string) => void;
+  onShowDetails: (benefit: Benefit) => void;
   key?: React.Key;
 }
 
-export default function BenefitCard({ benefit, onToggle }: BenefitCardProps) {
+export default function BenefitCard({ benefit, onToggle, onShowDetails }: BenefitCardProps) {
   const getIcon = () => {
     switch (benefit.icon) {
       case "Activity":
@@ -80,18 +82,33 @@ export default function BenefitCard({ benefit, onToggle }: BenefitCardProps) {
             </span>
           </div>
 
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center transition ${
-              benefit.isSelected
-                ? "bg-aspeb-orange text-white"
-                : "border-2 border-zinc-200 text-zinc-300"
-            }`}
-          >
-            {benefit.isSelected ? (
-              <CheckCircle2 className="h-5 w-5" />
-            ) : (
-              <Plus className="h-4 w-4" />
-            )}
+          <div className="flex items-center gap-2">
+            {/* Mais detalhes */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShowDetails(benefit);
+              }}
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-zinc-150 hover:bg-orange-100 text-zinc-500 hover:text-aspeb-orange transition cursor-pointer shadow-sm"
+              title="Mais detalhes"
+              aria-label="Saber mais detalhes"
+            >
+              <HelpCircle className="h-4.5 w-4.5 stroke-[2.5]" />
+            </button>
+
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center transition ${
+                benefit.isSelected
+                  ? "bg-aspeb-orange text-white"
+                  : "border-2 border-zinc-200 text-zinc-300"
+              }`}
+            >
+              {benefit.isSelected ? (
+                <CheckCircle2 className="h-5 w-5" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </div>
           </div>
         </div>
 

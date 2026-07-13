@@ -21,7 +21,12 @@ import {
   PiggyBank,
   Percent,
   Star,
-  Users
+  Users,
+  Accessibility,
+  Pill,
+  PlusCircle,
+  ShieldAlert,
+  Info
 } from "lucide-react";
 
 import { UserProfile, Coverage, Benefit, SimulationResult } from "./types";
@@ -59,6 +64,19 @@ export default function App() {
   const [benefits, setBenefits] = useState<Benefit[]>([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [lastCheckoutResult, setLastCheckoutResult] = useState<SimulationResult | null>(null);
+  const [detailsItem, setDetailsItem] = useState<{
+    type: "coverage" | "benefit";
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    tag?: string;
+    provider?: string;
+    cost?: number;
+    estimatedSavings?: number;
+    min?: number;
+    max?: number;
+  } | null>(null);
   
   // Navigation & Interactive UI States
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -118,6 +136,32 @@ export default function App() {
     setTimeout(() => {
       document.getElementById("simulator-sandbox")?.scrollIntoView({ behavior: "smooth" });
     }, 100);
+  };
+
+  const handleShowCoverageDetails = (cov: Coverage) => {
+    setDetailsItem({
+      type: "coverage",
+      id: cov.id,
+      title: cov.name,
+      description: cov.description,
+      icon: cov.icon,
+      min: cov.min,
+      max: cov.max
+    });
+  };
+
+  const handleShowBenefitDetails = (b: Benefit) => {
+    setDetailsItem({
+      type: "benefit",
+      id: b.id,
+      title: b.title,
+      description: b.description,
+      icon: b.icon,
+      tag: b.tag,
+      provider: b.provider,
+      cost: b.cost,
+      estimatedSavings: b.estimatedSavings
+    });
   };
 
   // Live recalculations for sliders
@@ -717,6 +761,7 @@ export default function App() {
                               key={cov.id}
                               coverage={cov}
                               onChange={handleCoverageChange}
+                              onShowDetails={handleShowCoverageDetails}
                               ageMultiplier={ageMultiplier}
                             />
                           ))}
@@ -740,6 +785,7 @@ export default function App() {
                               key={benefit.id}
                               benefit={benefit}
                               onToggle={handleBenefitToggle}
+                              onShowDetails={handleShowBenefitDetails}
                             />
                           ))}
                         </div>
@@ -1035,6 +1081,260 @@ export default function App() {
             ageMultiplier={ageMultiplier}
             onSuccess={handleCheckoutSuccess}
           />
+        )}
+      </AnimatePresence>
+
+      {/* SERVICE DETAILS MODAL */}
+      <AnimatePresence>
+        {detailsItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDetailsItem(null)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              id="details-backdrop"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-zinc-200 overflow-hidden z-10 flex flex-col"
+              id="details-modal"
+            >
+              {/* Header Visual with icon */}
+              <div className="p-6 pb-4 border-b border-zinc-100 flex items-start justify-between gap-4 bg-gradient-to-r from-orange-50/50 via-white to-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-aspeb-orange/10 text-aspeb-orange rounded-2xl flex items-center justify-center shrink-0">
+                    {/* Render suitable icon */}
+                    {detailsItem.icon === "Heart" && <Heart className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Accessibility" && <Accessibility className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Activity" && <Activity className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Pills" && <Pill className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "PlusCircle" && <PlusCircle className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "ShieldAlert" && <ShieldAlert className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Award" && <Award className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Smartphone" && <Smartphone className="h-6 w-6 stroke-[2]" />}
+                    {detailsItem.icon === "Phone" && <Phone className="h-6 w-6 stroke-[2]" />}
+                    {!["Heart", "Accessibility", "Activity", "Pills", "PlusCircle", "ShieldAlert", "Award", "Smartphone", "Phone"].includes(detailsItem.icon) && <Info className="h-6 w-6 stroke-[2]" />}
+                  </div>
+                  <div>
+                    {detailsItem.tag && (
+                      <span className="text-[10px] font-bold text-aspeb-orange bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100 mb-1 inline-block uppercase">
+                        {detailsItem.tag}
+                      </span>
+                    )}
+                    <h3 className="font-extrabold text-lg text-zinc-900 font-sans tracking-tight leading-tight">
+                      {detailsItem.title}
+                    </h3>
+                    {detailsItem.provider && (
+                      <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
+                        Parceiro: <span className="font-bold text-zinc-600">{detailsItem.provider}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setDetailsItem(null)}
+                  className="p-1.5 rounded-full hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition cursor-pointer shrink-0"
+                  aria-label="Fechar detalhes"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+                {/* Description */}
+                <div className="space-y-2">
+                  <h4 className="font-extrabold text-xs text-zinc-400 uppercase tracking-wider font-sans">
+                    Como Funciona / Descrição
+                  </h4>
+                  <p className="text-sm text-zinc-600 leading-relaxed font-sans">
+                    {detailsItem.description}
+                  </p>
+                </div>
+
+                {/* Specific details for Coverages */}
+                {detailsItem.type === "coverage" && (
+                  <div className="space-y-3 pt-3 border-t border-zinc-100">
+                    <h4 className="font-extrabold text-xs text-zinc-400 uppercase tracking-wider font-sans">
+                      Destaques da Cobertura
+                    </h4>
+                    <ul className="space-y-2.5 text-xs text-zinc-600 font-sans">
+                      <li className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                        <span><strong>Proteção Integral Icatu:</strong> Respaldado por uma das maiores corporações de previdência e vida do Brasil.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                        <span><strong>Isenção de Impostos:</strong> O capital é pago de forma direta e rápida, livre de inventários judiciais (ITCMD).</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                        <span><strong>Valores Customizáveis:</strong> Flexibilidade para simular coberturas entre {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(detailsItem.min || 10000)} e {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(detailsItem.max || 150000)} mensais.</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+
+                {/* Specific details for Benefits */}
+                {detailsItem.type === "benefit" && (
+                  <div className="space-y-4 pt-3 border-t border-zinc-100">
+                    
+                    {/* Key points */}
+                    <div className="space-y-2.5">
+                      <h4 className="font-extrabold text-xs text-zinc-400 uppercase tracking-wider font-sans">
+                        Por que ativar este benefício?
+                      </h4>
+                      <ul className="space-y-2.5 text-xs text-zinc-600 font-sans">
+                        {detailsItem.id === "consultas_matriz" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Economia garantida com consultas de clínica geral totalmente inclusas.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Especialidades disponíveis na sede própria da ASPEB em Belém.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Até 9 consultas anuais por associado titular.</span>
+                            </li>
+                          </>
+                        )}
+                        {detailsItem.id === "saude_rede" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Consultas e exames em clínicas particulares credenciadas por valores reduzidos.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Atendimento odontológico de emergência e tratamento de rotina.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Rede credenciada em constante expansão com cobertura em Belém e Região Norte.</span>
+                            </li>
+                          </>
+                        )}
+                        {detailsItem.id === "funeral" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Cobertura familiar completa de taxas de cemitério, caixão, flores e traslado.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Atendimento de plantão 24 horas por telefone para orientação e agilização imediata.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Sem limite de distância de traslado de corpo dentro do território nacional.</span>
+                            </li>
+                          </>
+                        )}
+                        {detailsItem.id === "sorteios" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Participação automática vinculada ao número do seu plano ativo.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Título de capitalização lastreado pela Icatu Seguros com sorteio oficial.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Valores pagos diretamente na conta corrente do titular sem complicação.</span>
+                            </li>
+                          </>
+                        )}
+                        {detailsItem.id === "farmacia" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Desconto imediato direto no caixa apresentando sua carteira digital ASPEB.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Válido para remédios de uso contínuo, genéricos e produtos de higiene credenciados.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Parceria com Droga Raia, Drogasil, Pague Menos, Extrafarma e muito mais.</span>
+                            </li>
+                          </>
+                        )}
+                        {detailsItem.id === "telemedicina" && (
+                          <>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Consultas ilimitadas sem coparticipação com clínicos gerais e pediatras de plantão.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Evite prontos-socorros lotados e tenha suporte de saúde seguro da sua casa.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                              <span>Receituário e atestados com assinatura digital aceitos em todas as farmácias nacionais.</span>
+                            </li>
+                          </>
+                        )}
+                        {!["consultas_matriz", "saude_rede", "funeral", "sorteios", "farmacia", "telemedicina"].includes(detailsItem.id) && (
+                          <li className="flex items-start gap-2">
+                            <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 stroke-[3]" />
+                            <span>Vantagem exclusiva e economia direta no orçamento familiar mensal.</span>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Financial stats of benefit */}
+                    <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-150 grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block">
+                          Custo do Serviço
+                        </span>
+                        <span className="text-sm font-extrabold text-zinc-700 font-sans block mt-0.5">
+                          {detailsItem.cost === 0 ? "Incluso no Plano" : `+ R$ ${detailsItem.cost?.toFixed(2).replace(".", ",")}`}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider block">
+                          Economia Estimada/ano
+                        </span>
+                        <span className="text-base font-black text-emerald-600 font-mono block mt-0.5">
+                          R$ {detailsItem.estimatedSavings?.toFixed(2).replace(".", ",")}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+              {/* Footer CTA */}
+              <div className="p-6 bg-zinc-50 border-t border-zinc-100 flex justify-end gap-3 rounded-b-3xl">
+                <button
+                  onClick={() => setDetailsItem(null)}
+                  className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition cursor-pointer"
+                >
+                  Entendi
+                </button>
+              </div>
+
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

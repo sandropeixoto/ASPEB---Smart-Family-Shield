@@ -11,11 +11,12 @@ import {
 interface CoverageSliderProps {
   coverage: Coverage;
   onChange: (id: string, value: number) => void;
+  onShowDetails: (coverage: Coverage) => void;
   ageMultiplier: number;
   key?: React.Key;
 }
 
-export default function CoverageSlider({ coverage, onChange, ageMultiplier }: CoverageSliderProps) {
+export default function CoverageSlider({ coverage, onChange, onShowDetails, ageMultiplier }: CoverageSliderProps) {
   const getIcon = () => {
     switch (coverage.icon) {
       case "Heart":
@@ -61,6 +62,17 @@ export default function CoverageSlider({ coverage, onChange, ageMultiplier }: Co
                   <Sparkles className="h-2.5 w-2.5" /> Ideal
                 </span>
               )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowDetails(coverage);
+                }}
+                className="w-6 h-6 rounded-full flex items-center justify-center bg-zinc-150 hover:bg-orange-100 text-zinc-500 hover:text-aspeb-orange transition cursor-pointer shrink-0 shadow-sm"
+                title="Mais detalhes"
+                aria-label="Saber mais detalhes"
+              >
+                <HelpCircle className="h-4 w-4 stroke-[2.5]" />
+              </button>
             </h3>
             <p className="text-xs text-zinc-500 mt-0.5 line-clamp-1">
               {coverage.shortDescription}
